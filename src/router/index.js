@@ -7,7 +7,19 @@ const routes = [
   {
     path: "/",
     name: "Layout",
-    component: () => import("../views/Layout.vue")
+    component: () => import("../views/Layout.vue"),
+    children: [
+      {
+        path: "/tableData",
+        name: "tableData",
+        component: () => import("../views/TableData.vue")
+      },
+      {
+        path: "/tableData2",
+        name: "tableData2",
+        component: () => import("../views/TableData2.vue")
+      }
+    ]
   }
   // {
   //   path: "/about",

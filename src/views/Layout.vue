@@ -3,11 +3,11 @@
     <el-aside width="auto" style="height:'100%';background-color: #545c64">
       <el-menu
         class="el-menu-vertical-demo"
+        :default-active="$route.path"
         :collapse="isCollapse"
         background-color="#545c64"
         text-color="#fff"
-        @open="handleOpen"
-        @close="handleClose"
+        router
       >
         <el-submenu index="5">
           <template slot="title">
@@ -42,43 +42,13 @@
       </el-header>
 
       <el-main>
-        <el-table
-          ref="multipleTable"
-          :data="
-            tableData.slice(
-              (queryInfo.pageNo - 1) * queryInfo.pageSize,
-              queryInfo.pageNo * queryInfo.pageSize
-            )
-          "
-          tooltip-effect="dark"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column prop="date" label="日期" width="140">
-          </el-table-column>
-          <el-table-column prop="name" label="姓名" width="120">
-          </el-table-column>
-          <el-table-column prop="address" label="地址" show-overflow-tooltip>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          class="pageView"
-          v-if="queryInfo.paginationShow"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page.sync="queryInfo.pageNo"
-          :page-sizes="[5, 10, 15, 20]"
-          :page-size.sync="queryInfo.pageSize"
-          layout="total,sizes,prev,pager,next"
-          :pager-count="11"
-          :total="queryInfo.totalCount"
-        >
-        </el-pagination>
-        <div style="margin-top: 20px">
-          <el-button @click="toggleSelection([tableData[1], tableData[2]])"
-            >切换第二、第三行的选中状态</el-button
-          >
-          <el-button @click="toggleSelection()">取消选择</el-button>
+        <el-breadcrumb separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item v-for="(arr, i) in links" :key="i">{{
+            arr.text
+          }}</el-breadcrumb-item>
+        </el-breadcrumb>
+        <div class="content">
+          <router-view></router-view>
         </div>
       </el-main>
     </el-container>
@@ -94,85 +64,8 @@ export default {
   data() {
     return {
       isCollapse: false,
-      multipleSelection: [],
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "1王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-02",
-          name: "2王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "3王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "4王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-08",
-          name: "5王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-06",
-          name: "6王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "7王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "8王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "9王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "10王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "11王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "12王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "13王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "14王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-07",
-          name: "15王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        }
-      ],
       iconData: "el-icon-d-arrow-left",
+      menuMap: {},
       menuList: [
         {
           index: "1",
@@ -187,13 +80,13 @@ export default {
               disable: false
             },
             {
-              index: "1-2",
+              index: "/tableData2",
               icon: "",
-              name: "选项二",
+              name: "菜单数据2",
               disable: false
             },
             {
-              index: "1-3",
+              index: "/tableData",
               icon: "",
               name: "菜单数据",
               disable: false
@@ -232,22 +125,38 @@ export default {
           name: "导航四",
           disable: false
         }
-      ],
-      queryInfo: {
-        pageSize: 10,
-        pageNo: 1,
-        paginationShow: true,
-        totalCount: 15
-      }
+      ]
     };
   },
+  computed: {
+    links() {
+      let test = this.menuList;
+      console.log(test);
+      test.forEach(m => {
+        const pl = m.index.slice(1);
+        this.menuMap[pl] = { name: m.title };
+        m.children.forEach(i => {
+          this.menuMap[pl][i.index.slice(1)] = i.title;
+        });
+      });
+      const arrl = this.$route.path.split("/");
+      const item1 = this.menuMap[arrl[1]].name;
+      const item2 = this.menuMap[arrl[1]][arrl[2]];
+      const arrs = [
+        {
+          text: item1,
+          disable: true,
+          href: "#"
+        },
+        {
+          text: item2,
+          disabled: true
+        }
+      ];
+      return arrs;
+    }
+  },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
     changeIcon() {
       if (this.iconData == "el-icon-d-arrow-left") {
         this.iconData = "el-icon-d-arrow-right";
@@ -257,29 +166,8 @@ export default {
         this.isCollapse = false;
       }
     },
-    handleSizeChange() {
-      console.log(this.queryInfo.pageNo, this.queryInfo.pageSize);
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    },
-    clearDate() {
-      this.$refs.multipleTable.clearSelection();
-      this.multipleSelection = [];
-      this.selectNum = [];
-    },
-    // 选择条数
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+    goBack() {
+      console.log("go back");
     }
   }
 };
