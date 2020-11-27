@@ -8,7 +8,7 @@
         :collapse="isCollapse"
         background-color="#545c64"
         text-color="#fff"
-        collapse-transition=false
+        collapse-transition="false"
         @open="handleOpen"
         @close="handleClose"
       >
@@ -60,12 +60,7 @@
         <el-row type="flex" class="row-bg" justify="space-between">
           <el-col :span="20" style="border: 1px solid transparent;">
             <!--设置透明边框占位，防止被挤走-->
-            <el-button
-              type="info"
-              :icon="iconData"
-              circle
-              @click="changeIcon"
-            >
+            <el-button type="info" :icon="iconData" circle @click="changeIcon">
             </el-button>
           </el-col>
           <el-col :span="2">
@@ -116,12 +111,12 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
-    changeIcon(){
-      if(this.iconData == 'el-icon-d-arrow-left'){
-        this.iconData = 'el-icon-d-arrow-right';
+    changeIcon() {
+      if (this.iconData == "el-icon-d-arrow-left") {
+        this.iconData = "el-icon-d-arrow-right";
         this.isCollapse = true;
-      }else{
-        this.iconData = 'el-icon-d-arrow-left';
+      } else {
+        this.iconData = "el-icon-d-arrow-left";
         this.isCollapse = false;
       }
     }
@@ -146,11 +141,11 @@ export default {
 .el-button--info {
   color: #fff;
   background-color: #b3c0d1;
-  border-color:  #b3c0d1;
+  border-color: #b3c0d1;
 }
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-    min-height: 400px;
-  }
+  width: 200px;
+  min-height: 400px;
+}
 </style>

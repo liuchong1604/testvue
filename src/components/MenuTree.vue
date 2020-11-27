@@ -6,8 +6,8 @@
         :index="menu.index"
         v-if="menu.children"
         :disabled="menu.disable"
-      > 
-       <span slot="title" v-if="menu.index=='1-4'">{{ menu.name }}</span>
+      >
+        <span slot="title" v-if="menu.index == '1-4'">{{ menu.name }}</span>
         <template slot="title" v-else>
           <i :class="menu.icon"></i>
           <span slot="title">
@@ -79,14 +79,14 @@ export default {
   transform: rotateZ(0deg);
 }
 
-.el-menu--collapse .el-submenu__title span{
-    height: 0;
-    width:0;
-    overflow:hidden;
-    visibility: hidden;
-    display: inline-block;
+.el-menu--collapse .el-submenu__title span {
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  visibility: hidden;
+  display: inline-block;
 }
-.el-menu--collapse .el-submenu__icon-arrow{
-    display: none;
+.el-menu--collapse .el-submenu__icon-arrow {
+  display: none;
 }
 </style>

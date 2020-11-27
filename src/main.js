@@ -13,3 +13,5 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount("#app");
+
+// 出现 warning  Delete `␍`  prettier/prettier 时使用npm run lint --fix解决

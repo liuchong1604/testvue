@@ -42,13 +42,44 @@
       </el-header>
 
       <el-main>
-        <el-table :data="tableData">
+        <el-table
+          ref="multipleTable"
+          :data="
+            tableData.slice(
+              (queryInfo.pageNo - 1) * queryInfo.pageSize,
+              queryInfo.pageNo * queryInfo.pageSize
+            )
+          "
+          tooltip-effect="dark"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55"> </el-table-column>
           <el-table-column prop="date" label="日期" width="140">
           </el-table-column>
           <el-table-column prop="name" label="姓名" width="120">
           </el-table-column>
-          <el-table-column prop="address" label="地址"> </el-table-column>
+          <el-table-column prop="address" label="地址" show-overflow-tooltip>
+          </el-table-column>
         </el-table>
+        <el-pagination
+          class="pageView"
+          v-if="queryInfo.paginationShow"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page.sync="queryInfo.pageNo"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size.sync="queryInfo.pageSize"
+          layout="total,sizes,prev,pager,next"
+          :pager-count="11"
+          :total="queryInfo.totalCount"
+        >
+        </el-pagination>
+        <div style="margin-top: 20px">
+          <el-button @click="toggleSelection([tableData[1], tableData[2]])"
+            >切换第二、第三行的选中状态</el-button
+          >
+          <el-button @click="toggleSelection()">取消选择</el-button>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -61,14 +92,86 @@ export default {
     MenuTree
   },
   data() {
-    const item = {
-      date: "2016-05-02",
-      name: "王小虎",
-      address: "上海市普陀区金沙江路 1518 弄"
-    };
     return {
       isCollapse: false,
-      tableData: Array(20).fill(item),
+      multipleSelection: [],
+      tableData: [
+        {
+          date: "2016-05-03",
+          name: "1王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-02",
+          name: "2王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "3王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "4王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-08",
+          name: "5王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-06",
+          name: "6王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "7王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "8王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "9王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "10王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "11王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "12王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "13王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "14王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-07",
+          name: "15王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        }
+      ],
       iconData: "el-icon-d-arrow-left",
       menuList: [
         {
@@ -92,7 +195,7 @@ export default {
             {
               index: "1-3",
               icon: "",
-              name: "选项三",
+              name: "菜单数据",
               disable: false
             },
             {
@@ -129,7 +232,13 @@ export default {
           name: "导航四",
           disable: false
         }
-      ]
+      ],
+      queryInfo: {
+        pageSize: 10,
+        pageNo: 1,
+        paginationShow: true,
+        totalCount: 15
+      }
     };
   },
   methods: {
@@ -147,6 +256,30 @@ export default {
         this.iconData = "el-icon-d-arrow-left";
         this.isCollapse = false;
       }
+    },
+    handleSizeChange() {
+      console.log(this.queryInfo.pageNo, this.queryInfo.pageSize);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    },
+    clearDate() {
+      this.$refs.multipleTable.clearSelection();
+      this.multipleSelection = [];
+      this.selectNum = [];
+    },
+    // 选择条数
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     }
   }
 };
@@ -163,29 +296,15 @@ export default {
   color: #333;
 }
 
-/* .el-menu-item {
-  background-color: rgb(238, 241, 246);
+.el-main {
+  height: 700px;
 }
-.el-button--info {
-  color: #fff;
-  background-color: #b3c0d1;
-  border-color: #b3c0d1;
+/* 控制pagination组件居中 */
+.pageView {
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
-
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 400px;
-}
-
-.el-submenu > .el-submenu__title .el-submenu__icon-arrow {
-  -webkit-transform: rotateZ(-90deg);
-  -ms-transform: rotate(-90deg);
-  transform: rotateZ(-90deg);
-}
-
-.el-submenu.is-opened > .el-submenu__title .el-submenu__icon-arrow {
-  -webkit-transform: rotateZ(0deg);
-  -ms-transform: rotate(0deg);
-  transform: rotateZ(0deg);
-} */
 </style>
