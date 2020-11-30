@@ -30,7 +30,6 @@ module.exports = {
     "vue/singleline-html-element-content-newline": 0,
     "vue/max-attributes-per-line": 0,
     "arrow-parens": "off",
-    "no-extend-native": ["error", { exceptions: ["Date"] }],
-    "endOfLine": 0
+    "no-extend-native": ["error", { exceptions: ["Date"] }]
   }
 };

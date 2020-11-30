@@ -43,9 +43,9 @@
 
       <el-main>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item v-for="(arr, i) in links" :key="i">{{
-            arr.text
-          }}</el-breadcrumb-item>
+          <el-breadcrumb-item v-for="(arr, i) in links" :key="i" :to="arr.href">
+            {{ arr.text }}
+          </el-breadcrumb-item>
         </el-breadcrumb>
         <div class="content">
           <router-view></router-view>
@@ -57,6 +57,7 @@
 
 <script>
 import MenuTree from "components/MenuTree";
+import menus from "@/menu";
 export default {
   components: {
     MenuTree
@@ -65,88 +66,24 @@ export default {
     return {
       isCollapse: false,
       iconData: "el-icon-d-arrow-left",
-      menuMap: {},
-      menuList: [
-        {
-          index: "1",
-          icon: "el-icon-location",
-          name: "导航一",
-          disable: false,
-          children: [
-            {
-              index: "1-1",
-              icon: "",
-              name: "选项一",
-              disable: false
-            },
-            {
-              index: "/tableData2",
-              icon: "",
-              name: "菜单数据2",
-              disable: false
-            },
-            {
-              index: "/tableData",
-              icon: "",
-              name: "菜单数据",
-              disable: false
-            },
-            {
-              index: "1-4",
-              icon: "",
-              name: "选项四",
-              disable: false,
-              children: [
-                {
-                  index: "1-4-1",
-                  icon: "",
-                  name: "选项4-1",
-                  disable: false
-                }
-              ]
-            }
-          ]
-        },
-        {
-          index: "2",
-          icon: "el-icon-menu",
-          name: "导航二",
-          disable: false
-        },
-        {
-          index: "3",
-          icon: "el-icon-document",
-          name: "导航三",
-          disable: true
-        },
-        {
-          index: "4",
-          icon: "el-icon-setting",
-          name: "导航四",
-          disable: false
-        }
-      ]
+      menuMap: {}
     };
   },
   computed: {
+    menuList() {
+      return menus;
+    },
     links() {
-      let test = this.menuList;
-      console.log(test);
-      test.forEach(m => {
-        const pl = m.index.slice(1);
-        this.menuMap[pl] = { name: m.title };
-        m.children.forEach(i => {
-          this.menuMap[pl][i.index.slice(1)] = i.title;
-        });
-      });
       const arrl = this.$route.path.split("/");
+      console.log(this.menuMap);
       const item1 = this.menuMap[arrl[1]].name;
-      const item2 = this.menuMap[arrl[1]][arrl[2]];
+      let str = arrl[1] + "/" + arrl[2];
+      const item2 = this.menuMap[arrl[1]][str];
       const arrs = [
         {
           text: item1,
           disable: true,
-          href: "#"
+          href: "/"
         },
         {
           text: item2,
@@ -154,6 +91,26 @@ export default {
         }
       ];
       return arrs;
+    }
+  },
+  created() {
+    // console.log(menus.length);
+    for (let i = 0; i < menus.length; i++) {
+      // console.log(menus[i]);
+      const pl = menus[i].index.slice(1);
+      console.log(pl);
+      this.menuMap[pl] = { name: menus[i].name };
+      //console.log(this.menuMap);
+      // console.log(menus[i].children);
+      if (typeof menus[i].children !== "undefined") {
+        //console.log(menus[i].children.length);
+        for (let j = 0; j < menus[i].children.length; j++) {
+          //console.log(menus[i].children[j].index.slice(1));
+          this.menuMap[pl][menus[i].children[j].index.slice(1)] =
+            menus[i].children[j].name;
+          //console.log(this.menuMap);
+        }
+      }
     }
   },
   methods: {
