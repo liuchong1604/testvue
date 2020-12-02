@@ -1,0 +1,16 @@
+{
+  "id": "2230871",
+  "name": "elThirdIcon",
+  "font_family": "iconfont",
+  "css_prefix_text": "el-icon-third-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "14176614",
+      "name": "二维码",
+      "font_class": "erweima",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    }
+  ]
+}

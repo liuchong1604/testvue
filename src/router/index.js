@@ -26,6 +26,11 @@ const routes = [
         component: () => import("../views/TableData2.vue")
       }
     ]
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("../views/Login")
   }
   // {
   //   path: "/about",

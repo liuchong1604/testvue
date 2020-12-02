@@ -9,7 +9,7 @@
         text-color="#fff"
         router
       >
-        <el-submenu index="5">
+        <el-submenu index="5" class="mainItem">
           <template slot="title">
             <i class="el-icon-location" style="visibility:hidden;"></i>
             <span slot="title">测试平台</span>
@@ -143,6 +143,7 @@ export default {
 
 .el-main {
   height: 700px;
+  background-color: #333;
 }
 /* 控制pagination组件居中 */
 .pageView {
