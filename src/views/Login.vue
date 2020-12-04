@@ -63,9 +63,14 @@
           style="overflow: hidden;border:10px solid rgba(255,255,255,0.2);box-sizing:border-box;"
         >
           <el-col :span="15">
-            <el-carousel :interval="5000" arrow="always" height="462px">
-              <el-carousel-item v-for="item in 4" :key="item">
-                <h3>{{ item }}</h3>
+            <el-carousel
+              :interval="5000"
+              arrow="always"
+              ref="carousel"
+              height="462px"
+            >
+              <el-carousel-item v-for="item in imgs" :key="item.url">
+                <img :src="item.url" style="width:100%;height:100%;" />
               </el-carousel-item>
             </el-carousel>
           </el-col>
@@ -74,7 +79,7 @@
               <el-form
                 v-model="dynamicValidateForm"
                 ref="dynamicValidateForm"
-                label-width="100px"
+                label-width="0px"
                 class="demo-dynamic"
               >
                 <el-menu
@@ -84,9 +89,132 @@
                   :collapse-transition="isCollapse"
                   v-if="isInput"
                 >
-                  <el-menu-item index="1">免密登录</el-menu-item>
-                  <el-menu-item index="2">用户登录</el-menu-item>
+                  <el-menu-item index="1" @click="isPhone = true">
+                    免密登录
+                  </el-menu-item>
+                  <el-menu-item index="2" @click="isPhone = false">
+                    用户登录
+                  </el-menu-item>
                 </el-menu>
+                <div style="margin-top:35px" v-if="isPhone && isInput">
+                  <el-form-item prop="name">
+                    <el-input
+                      placeholder="请输入手机号"
+                      v-model="phone1"
+                      class="input-with-select"
+                      style="background-color:#FFF!important;"
+                    >
+                      <el-select
+                        v-model="select"
+                        slot="prepend"
+                        placeholder="+86"
+                        style="width:80px;"
+                      >
+                        <el-option label="餐厅名" value="1"></el-option>
+                        <el-option label="订单号" value="2"></el-option>
+                        <el-option label="用户电话" value="3"></el-option>
+                      </el-select>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item prop="name">
+                    <el-row>
+                      <el-col :span="16">
+                        <el-input placeholder="请输入验证码" v-model="code">
+                        </el-input>
+                      </el-col>
+                      <el-col :span="4">
+                        <el-button type="primary">
+                          获取验证码
+                        </el-button>
+                      </el-col>
+                    </el-row>
+                  </el-form-item>
+                  <div style="margin-top:24px">
+                    <el-checkbox v-model="checked">记住我 </el-checkbox>
+                  </div>
+                  <div style="margin-top:24px">
+                    <el-button type="primary" style="width:350px;">
+                      注册/登录
+                    </el-button>
+                  </div>
+                </div>
+                <div style="margin-top:35px" v-if="!isPhone && isInput">
+                  <el-form-item prop="name">
+                    <el-input
+                      v-model="phone2"
+                      class="inputDeep"
+                      placeholder="手机号或用户名"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item prop="name">
+                    <el-input
+                      v-model="password"
+                      class="inputDeep"
+                      placeholder="密码"
+                      show-password
+                    ></el-input>
+                  </el-form-item>
+                  <div style="margin-top:24px;text-align:right;font-size:13px;">
+                    <a href="#" style="text-decoration:none;">
+                      忘记密码？
+                    </a>
+                  </div>
+                  <div style="margin-top:24px">
+                    <el-button type="primary" style="width:350px;">
+                      登录
+                    </el-button>
+                  </div>
+                </div>
+                <div style="margin-top:24px" v-if="isInput">
+                  <div style="color:grey;font-size:13px;text-align:left;">
+                    未注册手机验证后自动登录，注册即代表同意
+                    <a
+                      href="#"
+                      style="text-decoration:none;"
+                      @click.prevent="agreement = true"
+                    >
+                      《知乎协议》&nbsp;&nbsp;
+                    </a>
+                    <a
+                      href="#"
+                      style="text-decoration:none;"
+                      @click.prevent="
+                        隐私;
+                        privacy = true;
+                      "
+                    >
+                      《隐私保护指引》
+                    </a>
+                  </div>
+                  <el-dialog
+                    title="知乎协议"
+                    :visible.sync="agreement"
+                    width="30%"
+                    :before-close="handleClose"
+                  >
+                    <span>这是一段信息</span>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="agreement = false">取 消</el-button>
+                      <el-button type="primary" @click="agreement = false">
+                        确 定
+                      </el-button>
+                    </span>
+                  </el-dialog>
+                  <el-dialog
+                    title="隐私保护指引"
+                    :visible.sync="privacy"
+                    width="30%"
+                    :before-close="handleClose"
+                  >
+                    <span>这是一段信息</span>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="privacy = false">取 消</el-button>
+                      <el-button type="primary" @click="privacy = false">
+                        确 定
+                      </el-button>
+                    </span>
+                  </el-dialog>
+                </div>
                 <div class="ercode_tab swicth-ercode" v-if="isInput">
                   <svg
                     width="52"
@@ -182,11 +310,39 @@ import QRCode from "qrcodejs2";
 export default {
   name: "Login",
   data: () => ({
-    isInput: true,
+    isInput: true, // 是否是表单输入页面
     dynamicValidateForm: true,
-    isCollapse: false,
-    isErweima: false,
-    count: 0
+    isCollapse: false, // 是否开启menu折叠动画
+    isErweima: false, // 是否显示二维码
+    count: 0, // 控制二维码只加载一次
+    isPhone: true,
+    imgs: [
+      {
+        url: require("../assets/img/cloud.jpg"),
+        link: "/content1"
+      },
+      {
+        url: require("../assets/img/join.jpg"),
+        link: "/content1"
+      },
+      {
+        url: require("../assets/img/moreSystem.jpg"),
+        link: "/content1"
+      },
+      {
+        url: require("../assets/img/platom.jpg"),
+        link: "/content1"
+      }
+    ],
+    phone1: "",
+    code: "",
+    password: "",
+    phone2: "",
+    agreement: false,
+    privacy: false,
+    select: "",
+    checked: "",
+    name: ""
   }),
   methods: {
     switchInput() {
@@ -208,6 +364,9 @@ export default {
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
+    },
+    handleClose(done) {
+      done();
     }
   }
 };
@@ -216,10 +375,12 @@ export default {
 <style scoped>
 .bg {
   background: linear-gradient(to top right, #2c324c, #9c877c);
+  padding-right: 0px !important;
+  overflow: hidden;
 }
-div {
+/* div {
   display: block;
-}
+} */
 .el-carousel__item h3 {
   color: #475669;
   font-size: 18px;
@@ -255,5 +416,11 @@ div {
   line-height: 33px;
   margin-bottom: 30px;
   margin-top: 30px;
+}
+.inputDeep >>> .el-input__inner {
+  border-top-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 1px;
 }
 </style>

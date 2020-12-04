@@ -47,7 +47,7 @@
             {{ arr.text }}
           </el-breadcrumb-item>
         </el-breadcrumb>
-        <div class="content">
+        <div class="content" style="margin-top:35px">
           <router-view></router-view>
         </div>
       </el-main>
@@ -143,7 +143,6 @@ export default {
 
 .el-main {
   height: 700px;
-  background-color: #333;
 }
 /* 控制pagination组件居中 */
 .pageView {
