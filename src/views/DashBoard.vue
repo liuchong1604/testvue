@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { testabc } from "common/test";
+// import { testabc } from "common/test";
 import QRCode from "qrcodejs2";
 export default {
   name: "DashBoard",
@@ -19,22 +19,22 @@ export default {
     message: ""
   }),
   created() {
-    testabc()
-      .then(resp => {
-        console.log(resp);
-        this.message = resp.data.message;
-        this.$message({
-          message: "恭喜你，这是一条成功消息",
-          type: "success"
-        });
-      })
-      .catch(err => {
-        console.log(err);
-        this.$message({
-          message: "tet",
-          type: "error"
-        });
-      });
+    // testabc()
+    //   .then(resp => {
+    //     console.log(resp);
+    //     this.message = resp.data.message;
+    //     this.$message({
+    //       message: "恭喜你，这是一条成功消息",
+    //       type: "success"
+    //     });
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //     this.$message({
+    //       message: "fail",
+    //       type: "error"
+    //     });
+    //   });
   },
   methods: {
     createQrCode() {

@@ -96,7 +96,7 @@
                     用户登录
                   </el-menu-item>
                 </el-menu>
-                <div style="margin-top:35px" v-if="isPhone && isInput">
+                <div style="margin-top:35px" v-show="isPhone && isInput">
                   <el-form-item prop="name">
                     <el-input
                       placeholder="请输入手机号"
@@ -123,8 +123,13 @@
                         </el-input>
                       </el-col>
                       <el-col :span="4">
-                        <el-button type="primary">
-                          获取验证码
+                        <el-button
+                          type="primary"
+                          @click="countDown"
+                          :disabled="disabled"
+                          v-text="content"
+                          style="width:120px;"
+                        >
                         </el-button>
                       </el-col>
                     </el-row>
@@ -133,15 +138,19 @@
                     <el-checkbox v-model="checked">记住我 </el-checkbox>
                   </div>
                   <div style="margin-top:24px">
-                    <el-button type="primary" style="width:350px;">
+                    <el-button
+                      type="primary"
+                      style="width:350px;"
+                      @click="handleLoginByPhone"
+                    >
                       注册/登录
                     </el-button>
                   </div>
                 </div>
-                <div style="margin-top:35px" v-if="!isPhone && isInput">
+                <div style="margin-top:35px" v-show="!isPhone && isInput">
                   <el-form-item prop="name">
                     <el-input
-                      v-model="phone2"
+                      v-model="phoneOrUsername"
                       class="inputDeep"
                       placeholder="手机号或用户名"
                     ></el-input>
@@ -160,7 +169,11 @@
                     </a>
                   </div>
                   <div style="margin-top:24px">
-                    <el-button type="primary" style="width:350px;">
+                    <el-button
+                      type="primary"
+                      style="width:350px;"
+                      @click="handleLoginByPwd"
+                    >
                       登录
                     </el-button>
                   </div>
@@ -307,6 +320,8 @@
 
 <script>
 import QRCode from "qrcodejs2";
+import { sendSms } from "../common/common";
+import { findUserByPhoneOrName } from "../common/user";
 export default {
   name: "Login",
   data: () => ({
@@ -337,12 +352,16 @@ export default {
     phone1: "",
     code: "",
     password: "",
-    phone2: "",
+    phoneOrUsername: "",
     agreement: false,
     privacy: false,
     select: "",
     checked: "",
-    name: ""
+    name: "",
+    content: "点击获取",
+    content1: "登录",
+    disabled: false,
+    totalTime: 10
   }),
   methods: {
     switchInput() {
@@ -367,6 +386,115 @@ export default {
     },
     handleClose(done) {
       done();
+    },
+    countDown() {
+      const that = this;
+      this.disabled = true;
+      this.content = this.totalTime + "s后重试";
+      const data = {
+        phone: this.phone1
+      };
+      sendSms(this.$qs.stringify(data)).then(response => {
+        console.log(response);
+        if (response.status == 204) {
+          this.$message({
+            showClose: true,
+            message: "发送成功",
+            type: "success"
+          });
+        } else {
+          this.$message({
+            showClose: true,
+            message: "发送失败，请重新尝试",
+            type: "error"
+          });
+          this.content = "重新获取";
+          this.totalTime = 60;
+          this.disabled = false;
+        }
+      });
+
+      that.cloak = setInterval(function() {
+        // 定时器里面的this不是指向form组件
+        that.totalTime--;
+        if (that.totalTime > 0) {
+          that.content = that.totalTime + "s后重试";
+        }
+        if (that.totalTime <= 0) {
+          window.clearInterval(that.cloak); // 当倒计时小于等于0时清除定时器
+          that.content = "重新获取";
+          that.totalTime = 60;
+          that.disabled = false; // 这里重新开启
+        }
+      }, 1000);
+    },
+    handleLoginByPhone() {
+      // console.log("正在处理登录");
+      const formData = {
+        mobileno: this.phone1,
+        code: this.code
+      };
+      this.$store
+        .dispatch("Register", this.$qs.stringify(formData))
+        .then(() => {
+          this.$router.push({ path: "/" });
+        })
+        .catch(() => {
+          console.log("出错了");
+        });
+    },
+    handleLoginByPwd() {
+      console.log("密码登录");
+      const formData = {
+        mobileno: this.phoneOrUsername,
+        username: this.phoneOrUsername
+      };
+      findUserByPhoneOrName(this.$qs.stringify(formData))
+        .then(resp => {
+          console.log(resp);
+          if (resp.data.flag == 1) {
+            // flag == 1是用户名
+            const formData1 = {
+              username: this.phoneOrUsername,
+              pwd: this.password
+            };
+            this.$store
+              .dispatch("Login", this.$qs.stringify(formData1))
+              .then(() => {
+                this.$message({
+                  showClose: true,
+                  message: "登录成功",
+                  type: "success"
+                });
+                this.$router.push({ path: "/" });
+              })
+              .catch(() => {
+                console.log("出错了");
+              });
+          } else {
+            // flag==2是手机号
+            const formData2 = {
+              mobileno: this.phoneOrUsername,
+              pwd: this.password
+            };
+            this.$store
+              .dispatch("Login", this.$qs.stringify(formData2))
+              .then(() => {
+                this.$message({
+                  showClose: true,
+                  message: "登录成功",
+                  type: "success"
+                });
+                this.$router.push({ path: "/" });
+              })
+              .catch(() => {
+                console.log("出错了");
+              });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 };

@@ -31,9 +31,9 @@
             <el-dropdown>
               <i class="el-icon-setting" style="margin-right: 15px"></i>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>查看</el-dropdown-item>
-                <el-dropdown-item>新增</el-dropdown-item>
-                <el-dropdown-item>删除</el-dropdown-item>
+                <el-dropdown-item>设 置</el-dropdown-item>
+                <el-dropdown-item>退 出</el-dropdown-item>
+                <el-dropdown-item>个人资料</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             王小虎
@@ -43,7 +43,11 @@
 
       <el-main>
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item v-for="(arr, i) in links" :key="i" :to="arr.href">
+          <el-breadcrumb-item
+            v-for="arr in links"
+            :key="arr.text"
+            :to="arr.href"
+          >
             {{ arr.text }}
           </el-breadcrumb-item>
         </el-breadcrumb>
@@ -75,21 +79,38 @@ export default {
     },
     links() {
       const arrl = this.$route.path.split("/");
-      console.log(this.menuMap);
+      // console.log(this.menuMap);
       const item1 = this.menuMap[arrl[1]].name;
       let str = arrl[1] + "/" + arrl[2];
       const item2 = this.menuMap[arrl[1]][str];
-      const arrs = [
-        {
-          text: item1,
-          disable: true,
+      const arrs = [];
+      if (item1 !== "首页") {
+        arrs.push({
+          text: "首页",
           href: "/"
+        });
+      }
+      arrs.push(
+        {
+          text: item1
         },
         {
-          text: item2,
-          disabled: true
+          text: item2
         }
-      ];
+      );
+      // const arrs = [
+      //   {
+      //     text: "首页",
+      //     href: "/"
+      //   },
+      //   {
+      //     text: item1
+      //   },
+      //   {
+      //     text: item2
+      //   }
+      // ];
+      // console.log(arrs);
       return arrs;
     }
   },
@@ -98,7 +119,7 @@ export default {
     for (let i = 0; i < menus.length; i++) {
       // console.log(menus[i]);
       const pl = menus[i].index.slice(1);
-      console.log(pl);
+      // console.log(pl);
       this.menuMap[pl] = { name: menus[i].name };
       //console.log(this.menuMap);
       // console.log(menus[i].children);
@@ -112,6 +133,7 @@ export default {
         }
       }
     }
+    // console.log(this.menuMap);
   },
   methods: {
     changeIcon() {

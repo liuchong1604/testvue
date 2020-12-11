@@ -21,7 +21,11 @@ export function request(config) {
 
   instance.interceptors.response.use(
     response => {
-      if (response.status === 200 || response.status === 201) {
+      if (
+        response.status === 200 ||
+        response.status === 201 ||
+        response.status === 204
+      ) {
         return response;
       } else {
         return Promise.reject(new Error("出现错误"));

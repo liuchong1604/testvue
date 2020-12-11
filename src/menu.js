@@ -64,10 +64,18 @@ const menus = [
     disable: true
   },
   {
-    index: "/4",
+    index: "/user",
     icon: "el-icon-setting",
-    name: "导航四",
-    disable: false
+    name: "个人设置",
+    disable: false,
+    children: [
+      {
+        index: "/user/settings",
+        icon: "",
+        name: "账户设置",
+        disable: false
+      }
+    ]
   }
 ];
 

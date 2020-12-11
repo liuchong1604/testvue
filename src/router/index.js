@@ -1,5 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import { getToken } from "../common/auth";
+
+const originPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originPush.call(this, location).catch(err => err);
+};
 
 Vue.use(VueRouter);
 
@@ -24,6 +30,11 @@ const routes = [
         path: "/daohang1/tableData2",
         name: "tableData2",
         component: () => import("../views/TableData2.vue")
+      },
+      {
+        path: "/user/settings",
+        name: "settings",
+        component: () => import("../views/Settings.vue")
       }
     ]
   },
@@ -47,6 +58,29 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+const whiteList = ["/login"]; //不重定向名单
+router.beforeEach((to, from, next) => {
+  if (getToken()) {
+    if (to.path === "/login") {
+      next({
+        path: "/"
+      });
+    } else {
+      next();
+    }
+  } else {
+    if (whiteList.indexOf(to.path) !== -1) {
+      //在白名单中
+      next();
+    } else {
+      let path = to.path;
+      path = path.replace(/\//gi, "%2F");
+      console.log(path);
+      next(`/login?redirect=${path}`); //否则全部重定向到登录页
+    }
+  }
 });
 
 export default router;
